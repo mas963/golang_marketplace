@@ -1,0 +1,34 @@
+﻿version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    entrypoint:
+      - DB_HOST=postgres
+      - DB_USER=postgres
+      - DB_PORT=5431
+      - DB_PASSWORD=123456
+      - DB_NAME=ecommerce
+      - REDIS_HOST=redis
+    depends_on:
+      - postgres
+      - redis
+
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: ecommerce
+    ports:
+      - "5431:5432"
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
